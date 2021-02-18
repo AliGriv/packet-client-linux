@@ -36,7 +36,7 @@ def receiveRigidBodyFrame(frameID, pos, orient,
 if __name__ == "__main__":
     event = Event()  # Event object to sync the main thread and the optitrack thread
     # To run in the optitrackThread
-    optitrackThread = NatNetClient()  # This will create a new NatNet client to connect to motive
+    optitrackThread = NatNetClient(ver=(2, 9, 0, 0), quiet=False)  # This will create a new NatNet client to connect to motive
     optitrackThread.newFrameListener = receiveNewFrame  # Configure the streaming client to call our rigid body handler on the emulator to send data out.
     optitrackThread.rigidBodyListener = receiveRigidBodyFrame
     optitrackThread.run()
