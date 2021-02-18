@@ -14,7 +14,8 @@ DoubleValue = struct.Struct('<d')
 
 
 class NatNetClient:
-  def __init__(self, ver=(3, 0, 0, 0), server_ip="192.168.2.3", quiet=True):
+  callCounter = 0  # This is to keep track of number of calls to the call-back function which updates pose measurements of one copter at each function call.
+  def __init__(self, ver=(3, 0, 0, 0), server_ip="192.168.1.2", quiet=True):
     self.__natNetStreamVersion = ver
     self.serverIPAddress = server_ip
     self.multicastAddress = "239.255.42.99"
@@ -68,6 +69,8 @@ class NatNetClient:
     logging.info("\tID: {}".format(rb_id))
 
     # Position and orientation
+    print("len(data)")
+    print(len(data))
     pos = Vector3.unpack(data[offset:offset + 12])
     offset += 12
     logging.info("\t\tPosition: {}".format(pos))
@@ -133,6 +136,8 @@ class NatNetClient:
     offset += 4
     logging.info("\tRigid Body Count: {}".format(rigidBodyCount))
     # Rigid bodies
+    print("rigidBodyCount is")
+    print(rigidBodyCount)
     for j in range(rigidBodyCount):
       offset += self.__unpackRigidBody(data[offset:])
 
@@ -510,7 +515,8 @@ class NatNetClient:
 
     # A hacky way to get the IP of the interface that connects to the Internet
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
+    # s.connect(("8.8.8.8", 80))
+    s.connect(("192.168.1.1", 1511))
     my_ip = s.getsockname()[0]
     s.close()
     # Specify my_ip as the interface to subscribe to multicast through
@@ -585,7 +591,7 @@ if __name__ == "__main__":
     print("--Received rigid body {}".format(id))
 
   # Optitrack client
-  streamingClient = NatNetClient(ver=(3, 0, 0, 0), quiet=False)
+  streamingClient = NatNetClient(ver=(2, 9, 0, 0), quiet=False)
   streamingClient.newFrameListener = receiveNewFrame
   streamingClient.rigidBodyListener = receiveRigidBodyFrame
   streamingClient.run()
